@@ -17,6 +17,22 @@ borrows_collection = db["borrowed_collection"]
 # print("id of inserted document--->",inserted_document.inserted_id)
 # client.close()
 
+# Define a route to serve HTML content
+@app.get("/", response_class=HTMLResponse)
+async def home():
+    return """
+    <html>
+    <head>
+        <title>Welcome to Library API</title>
+    </head>
+    <body>
+        <h1>Welcome to Library API</h1>
+        <p>This is the homepage of the Library API.</p>
+        <p>Explore the API documentation at <a href="/docs">/docs</a>.</p>
+    </body>
+    </html>
+    """
+
 
 # Mocked user authentication function
 
