@@ -14,30 +14,13 @@ uri = "mongodb+srv://ravi:12345@cluster0.hpw4hsi.mongodb.net/?retryWrites=true&w
 client = MongoClient(uri)
 db = client["library_database"]
 books_collection = db["books_collection"]
-borrows_collection = db["borrowed_collection"]
-# print(books_collection)
-
-# Mocked user authentication function
-
-async def fake_user_authentication(username: str, password: str):
-    # You can implement your own user authentication logic here
-    if username == "admin" and password == "password":
-        return True
-    else:
-        return False
 
 # Model for Book schema
 class Book(BaseModel):
     title: str
-    book_id: str
     author: str
-    year: int
-
-# Model for Borrow schema
-class Borrow(BaseModel):
-    user_id: str
-    book_id: str
-    due_date: str
+    genre: str
+    book_id:str
 
 # Model for Pagination
 class Pagination(BaseModel):
@@ -89,39 +72,9 @@ async def update_book(book_id: str, book: Book):
     else:
         raise HTTPException(status_code=404, detail="Book not found")
 
-# User Authentication and Authorization
-@app.post("/login/")
-async def login(username: str, password: str):
-    if await fake_user_authentication(username, password):
-        return {"message": "Login successful"}
-    else:
-        raise HTTPException(status_code=401, detail="Invalid credentials")
-    
-# Adding Categories and Tags to Books
-@app.put("/books/{book_id}/categories/")
-async def add_categories_to_book(book_id: str, categories: List[str]):
-    result = books_collection.update_one({"_id": ObjectId(book_id)}, {"$addToSet": {"categories": {"$each": categories}}})
-    if result.modified_count != 1:
-        raise HTTPException(status_code=404, detail="Book not found")
-
-@app.put("/books/{book_id}/tags/")
-async def add_tags_to_book(book_id: str, tags: List[str]):
-    result = books_collection.update_one({"_id": ObjectId(book_id)}, {"$addToSet": {"tags": {"$each": tags}}})
-    if result.modified_count != 1:
-        raise HTTPException(status_code=404, detail="Book not found")
-
-# Tracking Borrowed Books and Due Dates
-@app.post("/borrows/", response_model=Borrow)
-async def borrow_book(borrow: Borrow):
-    borrow_dict = borrow.dict()
-    result = borrows_collection.insert_one(borrow_dict)
-    return {**borrow_dict, "id": str(result.inserted_id)}
-
 # API to delete a book by ID
 @app.delete("/books/{book_id}", status_code=204)
 async def delete_book(book_id: str):
     result = books_collection.delete_one({"_id": ObjectId(book_id)})
     if result.deleted_count != 1:
         raise HTTPException(status_code=404, detail="Book not found")
-
-
