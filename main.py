@@ -9,7 +9,7 @@ uri = "mongodb+srv://ravi:12345@cluster0.hpw4hsi.mongodb.net/?retryWrites=true&w
 
 # Initialize MongoDB client
 client = MongoClient(uri)
-db = client["library_databse"]
+db = client["library_database"]
 books_collection = db["books_collection"]
 borrows_collection = db["borrowed_collection"]
 # document = {"name of book": "hands on machine learning","author":"ravi chandera"}
