@@ -20,7 +20,7 @@ class Book(BaseModel):
     title: str
     author: str
     genre: str
-    book_id:str
+    book_id:int
 
 # Model for Pagination
 class Pagination(BaseModel):
