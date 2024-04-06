@@ -50,31 +50,4 @@ async def search_books(query: str = Query(...)):
         books.append({**book, "id": str(book.pop("_id"))})
     return books
 
-# API to get a single book by ID
-@app.get("/books/{book_id}", response_model=Book)
-async def get_book_by_id(book_id: str):
-    if not ObjectId.is_valid(book_id):
-        raise HTTPException(status_code=400, detail="Invalid book ID format")
-    
-    book = books_collection.find_one({"_id": ObjectId(book_id)})
-    if book:
-        return {**book, "id": str(book.pop("_id"))}
-    else:
-        raise HTTPException(status_code=404, detail="Book not found")
 
-# API to update a book by ID
-@app.put("/books/{book_id}", response_model=Book)
-async def update_book(book_id: str, book: Book):
-    book_data = book.dict()
-    result = books_collection.update_one({"_id": ObjectId(book_id)}, {"$set": book_data})
-    if result.modified_count == 1:
-        return {**book_data, "id": book_id}
-    else:
-        raise HTTPException(status_code=404, detail="Book not found")
-
-# API to delete a book by ID
-@app.delete("/books/{book_id}", status_code=204)
-async def delete_book(book_id: str):
-    result = books_collection.delete_one({"_id": ObjectId(book_id)})
-    if result.deleted_count != 1:
-        raise HTTPException(status_code=404, detail="Book not found")
